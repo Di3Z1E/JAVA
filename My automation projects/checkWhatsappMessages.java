@@ -21,7 +21,7 @@ public class checkWhatsappMessages {
 		
 		Thread.sleep(8000); //Wait for WhatsApp to load		
 		
-		Runnable helloRunnable = new Runnable() {
+		Runnable loop = new Runnable() {
 		    public void run() {
                 String name = "WhatsApp"; //expected string
                 String msgcheck = driver.getTitle(); //actual string
@@ -40,6 +40,6 @@ public class checkWhatsappMessages {
 		    }
 		};
 		ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-		executor.scheduleAtFixedRate(helloRunnable, 0, 5, TimeUnit.SECONDS); //Set amount of wait time (0 = mintues) (5 = seconds)        
+		executor.scheduleAtFixedRate(loop, 0, 5, TimeUnit.SECONDS); //Set amount of wait time (0 = mintues) (5 = seconds)        
 	}
 	}
