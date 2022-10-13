@@ -1,34 +1,44 @@
+package mySideProjects;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.Keys;
 
-public class FXP {
+public class fxpRegisterAndFollowEverytime {
 
 	public static void main(String[] args) throws InterruptedException {
-		
 		//Enable notifications
 		Map<String, Object> prefs = new HashMap<String, Object>();
         prefs.put("profile.default_content_setting_values.notifications", 1);
         ChromeOptions options = new ChromeOptions();
         options.setExperimentalOption("prefs", prefs);
 		
-		//Setting up Selenium
+		//Setting up
         System.setProperty("webdriver.chrome.driver", "C:\\automation\\drivers\\chromedriver.exe");
         WebDriver driver = new ChromeDriver(options);
         driver.manage().window().maximize();
-        driver.get("https://www.fxp.co.il/");
-        Actions builder = new Actions(driver);
+        driver.get("https://www.fxp.co.il/register.php");
         
-		/* Since we are using live site we don't want to insert values each time to the code so we create a random string to that for us */
-        
-        //Create random string
+        //Call methods
+        registerFxpUser(driver);
+        followFxpUser(driver);
+        logoutNewUser(driver);
+        repeat(driver);
+}
+	
+	public static void registerFxpUser(WebDriver driver) throws InterruptedException {
+		//Get back to FXP register page
+		driver.get("https://www.fxp.co.il/register.php");
+		
+		//Create random string
         char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
 		StringBuilder sb = new StringBuilder(10);
 		Random random = new Random();
@@ -40,11 +50,9 @@ public class FXP {
 		
 		/* the first process of creating the account */
 		
-		//Register to FXP with random name + mail
-        WebElement reg = driver.findElement(By.xpath("//*[@id=\"sticky_menu_header\"]/div[5]/a"));
-        reg.click();
-        
-        WebElement username = driver.findElement(By.xpath("//*[@id=\"regusername\"]"));
+		//Register to FXP with random name + mail       
+		Actions builder = new Actions(driver);
+		WebElement username = driver.findElement(By.xpath("//*[@id=\"regusername\"]"));
         username.click();
         Thread.sleep(500);
         builder.sendKeys(randomString).perform();
@@ -79,13 +87,39 @@ public class FXP {
 			System.out.println("The new profile has not been created, closing the program." + chkNewProfile);
 			driver.close();
 		}
+	}
+	
+	public static void followFxpUser(WebDriver driver) throws InterruptedException {
+		Actions builder = new Actions(driver);
 		
-		//Get another profile to follow him
-        driver.get("https://www.fxp.co.il/member.php?u=892957"); 
+		driver.get("https://www.fxp.co.il/member.php?u=1377814"); 
         Thread.sleep(500);
         
+        builder.keyDown(Keys.F5).perform();
+        
         driver.findElement(By.xpath("//*[@id='userinfoblock']/div/div[1]")).click();
-        Thread.sleep(750);
-
+        Thread.sleep(1500);
+        
+        //Check to see if user been followed 
+		String expectedFollowerCount = driver.findElement(By.xpath("//*[@id='userinfoblock']/div/div[1]")).getText() + 1;
+		String actualCount = driver.findElement(By.xpath("//*[@id='userinfoblock']/div/div[1]")).getText();
+        
+		if (expectedFollowerCount.equals(actualCount)) {
+			System.out.println("Failed to add follow");
+			driver.close();
+		}else {
+			System.out.println("Success to add follow");
 	}
+	}
+	public static void logoutNewUser(WebDriver driver) throws InterruptedException {
+		Thread.sleep(500);
+		driver.get("https://www.fxp.co.il/login.php?do=logout");
+		driver.findElement(By.xpath("//*[@id=\"vbulletin_html\"]/body/div[4]/div[4]/div/div/a")).click();
+	}
+	
+	public static void repeat(WebDriver driver) throws InterruptedException {
+		driver.quit();
+
+		main(null);	
+}
 }
