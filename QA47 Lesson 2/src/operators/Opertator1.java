@@ -3,7 +3,7 @@ package operators;
 public class Opertator1 {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+
 		long num = 0;
 		num = 20 + 30;
 		System.out.println(num);
